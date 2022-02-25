@@ -1,14 +1,29 @@
+import 'package:emailinbox_oguzhan_onal/httpService/api_model.dart';
 import 'package:emailinbox_oguzhan_onal/product/components/color/colors.dart';
 import 'package:emailinbox_oguzhan_onal/product/components/icons/const_icons.dart';
 import 'package:emailinbox_oguzhan_onal/product/components/text/app_text.dart';
 import 'package:emailinbox_oguzhan_onal/product/components/text/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:kartal/kartal.dart';
+import 'package:emailinbox_oguzhan_onal/httpService/api_call.dart';
 
 import '../model/clean_page_model.dart';
 
-class CleanPage extends StatelessWidget {
+class CleanPage extends StatefulWidget {
   const CleanPage({Key? key}) : super(key: key);
+
+  @override
+  State<CleanPage> createState() => _CleanPageState();
+}
+
+class _CleanPageState extends State<CleanPage> {
+  List<Todos> todos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getTodos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,40 +89,47 @@ class CleanPage extends StatelessWidget {
       ),
     );
   }
-}
 
-Expanded homeListView() {
-  return Expanded(
-    child: ListView.builder(
-      itemCount: cards.length,
-      itemBuilder: (context, index) {
-        return Container(
-          margin: context.verticalPaddingLow,
-          decoration: BoxDecoration(
-            borderRadius: context.lowBorderRadius,
-            color: ConstColors.white,
-          ),
-          child: ListTile(
-            trailing: Container(
-                decoration: BoxDecoration(
-                    color: ConstColors().blueOpacity,
-                    borderRadius: context.lowBorderRadius),
-                padding: context.paddingLow,
-                child: ConstIcons.deleteIcon),
-            title: Text(
-              cards[index].title,
-              style: TextStyles().textStyle7,
+  Expanded homeListView() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: todos.length,
+        itemBuilder: (context, index) {
+          return Container(
+            margin: context.verticalPaddingLow,
+            decoration: BoxDecoration(
+              borderRadius: context.lowBorderRadius,
+              color: ConstColors.white,
             ),
-            subtitle: Text(
-              cards[index].link,
-              style: TextStyles().textStyle8,
-              overflow: TextOverflow.fade,
-              maxLines: 1,
-              softWrap: false,
+            child: ListTile(
+              trailing: Container(
+                  decoration: BoxDecoration(
+                      color: ConstColors().blueOpacity,
+                      borderRadius: context.lowBorderRadius),
+                  padding: context.paddingLow,
+                  child: ConstIcons.deleteIcon),
+              title: Text(
+                todos[index].title,
+                style: TextStyles().textStyle7,
+              ),
+              subtitle: Text(
+                todos[index].id.toString(),
+                style: TextStyles().textStyle8,
+                overflow: TextOverflow.fade,
+                maxLines: 1,
+                softWrap: false,
+              ),
             ),
-          ),
-        );
-      },
-    ),
-  );
+          );
+        },
+      ),
+    );
+  }
+
+  _getTodos() async {
+    var _ref = await ApiCall().fetchTodos();
+    setState(() {
+      todos = _ref;
+    });
+  }
 }
